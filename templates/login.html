@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCIS Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #000000;
+            color: #ffffff;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animated background elements */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
+            z-index: -1;
+            animation: float 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            100% { transform: translateY(-20px) rotate(2deg); }
+        }
+
+        .login-container-wrapper {
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 400;
+        }
+
+        .login-container {
+            background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            animation: slideUp 0.8s ease-out 0.2s both;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+            border-radius: 24px;
+            z-index: -1;
+        }
+
+        .login-container h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 32px;
+            color: #ffffff;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .login-container input {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .login-container input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .login-container input:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+        }
+
+        .password-toggle-icon {
+            position: absolute;
+            top: 50%;
+            right: 16px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.6);
+            padding: 4px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .password-toggle-icon:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .login-container button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-top: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 4px 15px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .login-container button:hover {
+            background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
+            transform: translateY(-2px);
+            box-shadow: 
+                0 8px 25px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .login-container button:active {
+            transform: translateY(0);
+            box-shadow: 
+                0 4px 15px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .error-message {
+            color: #ff6b6b;
+            margin-top: 16px;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 12px;
+            background: rgba(255, 107, 107, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 107, 107, 0.2);
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .error-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .powered-by {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 300;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 480px) {
+            body {
+                padding: 16px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .login-container {
+                padding: 32px 24px;
+            }
+
+            .login-container h1 {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Loading animation for button */
+        .login-container button.loading {
+            pointer-events: none;
+            position: relative;
+            color: transparent;
+        }
+
+        .login-container button.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Focus states for accessibility */
+        .login-container input:focus,
+        .login-container button:focus {
+            outline: 2px solid rgba(255, 255, 255, 0.3);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container-wrapper">
+        <div class="header">
+            <h1>STUDENT-HIVE</h1>
+            <p>Integrated Student Information System</p>
+        </div>
+        <div class="login-container">
+            <h1>WELCOME</h1>
+            <form id="loginForm">
+                <div class="input-group">
+                    <input type="text" id="userid" placeholder="User ID" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="password" placeholder="Password" required>
+                    <span class="password-toggle-icon" onclick="togglePasswordVisibility()">
+                        <i class="fas fa-eye"></i>
+                    </span>
+                </div>
+                <button type="submit">Sign in</button>
+                <div class="error-message" id="errorMessage"></div>
+            </form>
+            <div class="powered-by">
+                Powered by Student-Hive
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const users = {
+            "22E31A0501": "2226@01",
+            "22E31A0502": "2226@02",
+            // Add more users as needed
+            "22E31A0503": "2226@03",
+            "22E31A0504": "2226@04",
+            "22E31A0505": "2226@05",
+            "22E31A0506": "2226@06",
+            "22E31A0507": "2226@07",
+            "22E31A0508": "2226@08",
+            "22E31A0509": "2226@09",
+            "22E31A0510": "2226@10",
+            "22E31A0511": "2226@11",
+            "22E31A0512": "2226@12",
+            "22E31A0513": "2226@13",
+            "22E31A0514": "2226@14",
+            "22E31A0515": "2226@15",
+            "22E31A0516": "2226@16",
+            "22E31A0517": "2226@17",
+            "22E31A0518": "2226@18",
+            "22E31A0519": "2226@19",
+            "22E31A0520": "2226@20",
+            "22E31A0521": "2226@21",
+            "22E31A0522": "2226@22",
+            "22E31A0523": "2226@23",
+            "22E31A0524": "2226@24",
+            "22E31A0525": "2226@25",
+            "22E31A0526": "2226@26",
+            "22E31A0527": "2226@27",
+            "22E31A0528": "2226@28",
+            "22E31A0529": "2226@29",
+            "22E31A0530": "2226@30",
+            "22E31A0531": "2226@31",
+            "22E31A0532": "2226@32",
+            "22E31A0533": "2226@33",
+            "22E31A0534": "2226@34",
+            "22E31A0535": "2226@35",
+            "22E31A0536": "2226@36",
+            "22E31A0537": "2226@37",
+            "22E31A0538": "2226@38",
+            "22E31A0539": "2226@39",
+            "22E31A0540": "2226@40",
+            "22E31A0541": "2226@41",
+            "22E31A0542": "2226@42",
+            "22E31A0543": "2226@43",
+            "22E31A0544": "2226@44",
+            "22E31A0545": "2226@45",
+            "22E31A0546": "2226@46",
+            "22E31A0547": "2226@47",
+            "22E31A0548": "2226@48",
+            "22E31A0549": "2226@49",
+            "22E31A0550": "2226@50",
+            "22E31A0551": "2226@51",
+            "22E31A0552": "2226@52",
+            "22E31A0553": "2226@53",
+            "22E31A0554": "2226@54",
+            "22E31A0555": "2226@55",
+            "22E31A0556": "2226@56",
+            "22E31A0557": "2226@57",
+            "22E31A0558": "2226@58",
+            "22E31A0559": "2226@59",
+            "22E31A0560": "2226@60",
+            "22E31A0561": "2226@61",
+            "22E31A0562": "2226@62",
+            "22E31A0563": "2226@63",
+            "22E31A0564": "2226@64",
+            "22E31A0565": "2226@65",
+            "22E31A0566": "2226@66",
+            "22E31A0567": "2226@67",
+            "22E31A0568": "2226@68",
+            "22E31A0569": "2226@69",
+            "22E31A0570": "2226@70",
+            "22E31A0571": "2226@71",
+            "22E31A0572": "2226@72",
+            "22E31A0573": "2226@73",
+            "22E31A0574": "2226@74",
+            "22E31A0575": "2226@75",
+            "22E31A0576": "2226@76",
+            "22E31A0577": "2226@77",
+            "22E31A0578": "2226@78",
+            "22E31A0579": "2226@79",
+            "22E31A0580": "2226@80",
+            "22E31A0581": "2226@81",
+            "22E31A0582": "2226@82",
+            "22E31A0583": "2226@83",
+            "22E31A0584": "2226@84",
+            "22E31A0585": "2226@85",
+            "22E31A0586": "2226@86",
+            "22E31A0587": "2226@87",
+            "22E31A0588": "2226@88",
+            "22E31A0589": "2226@89",
+            "22E31A0590": "2226@90",
+            "22E31A0591": "2226@91",
+            "22E31A0592": "2226@92",
+            "22E31A0593": "2226@93",
+            "22E31A0594": "2226@94",
+            "22E31A0595": "2226@95",
+            "22E31A0596": "2226@96",
+            "22E31A0597": "2226@97",
+            "22E31A0598": "2226@98",
+            "22E31A0599": "2226@99",
+            "22E31A05A0": "2226@100",
+            "22E31A05A1": "2226@101",
+            "22E31A05A2": "2226@102",
+            "22E31A05A3": "2226@103",
+            "22E31A05A4": "2226@104",
+            "22E31A05A5": "2226@105",
+            "22E31A05A6": "2226@106",
+            "ADMIN": "MASTERKEY",
+            "HARITHA": "9390468536",
+            "ASHWANKUMAR": "7382158500",
+            "KAVYASREE": "9948328385",
+            "SPANDANA": "7095099887",
+            "NAKKEERAN": "9384426970",
+            "MALLAREDDY": "7989520182",
+            "PABBOJURAMESH": "9640949969",
+            "SEVANAIK": "9542374787",
+            "SREENIVASREDDY": "9989542277",
+            "NAVEENKUMAR": "9010400844",
+            "SOWJANYA": "9849094751",
+            "NARSIREDDY": "7729901871",
+            "SAMPATHKUMAR": "8498944701",
+            "ANITHA": "8374081220",
+            "RAMESH": "7207156771"
+        };
+
+        const passwordField = document.getElementById("password");
+        const errorMessage = document.getElementById('errorMessage');
+
+        function togglePasswordVisibility() {
+            const togglePassword = document.querySelector(".password-toggle-icon i");
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                togglePassword.classList.remove("fa-eye");
+                togglePassword.classList.add("fa-eye-slash");
+            } else {
+                passwordField.type = "password";
+                togglePassword.classList.remove("fa-eye-slash");
+                togglePassword.classList.add("fa-eye");
+            }
+        }
+
+        // Automatically convert User ID to uppercase
+        document.getElementById('userid').addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
+        });
+
+        // Clear error message when user starts typing
+        document.getElementById('userid').addEventListener('input', clearError);
+        document.getElementById('password').addEventListener('input', clearError);
+
+        function clearError() {
+            if (errorMessage.classList.contains('show')) {
+                errorMessage.classList.remove('show');
+            }
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.add('show');
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const userId = document.getElementById('userid').value;
+            const password = document.getElementById('password').value;
+            const submitButton = this.querySelector('button[type="submit"]');
+
+            // Add loading state
+            submitButton.classList.add('loading');
+
+            // Simulate loading delay for better UX
+            setTimeout(() => {
+                if (userId === "ADMIN" && password === "MASTERKEY") {
+                    window.location.href = "root.html";  // Redirects to root.html for Admin
+                } else if (users[userId] && users[userId] === password) {
+                    window.location.href = "loading.html";  // Redirects to loading.html for normal users
+                } else {
+                    submitButton.classList.remove('loading');
+                    showError("Invalid Credentials.");
+                }
+            }, 800);
+        });
+    </script>
+</body>
+</html>

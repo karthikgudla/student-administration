@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Student Hive - Landing Page</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+    /* Reset and base */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #010a1f, #001832);
+      font-family: 'Poppins', sans-serif;
+      color: #e0e6f3;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* Container with subtle glass effect */
+    .circle-wrapper {
+      position: relative;
+      width: 550px;
+      height: 340px;
+      border-radius: 50%;
+      background: rgba(10, 25, 60, 0.65);
+      border: 1.5px solid rgba(0, 123, 255, 0.4);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: default;
+      user-select: none;
+      will-change: transform;
+      z-index: 10;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+
+      /* Start zoomed in */
+      transform: scale(1.15);
+      animation: zoomOutOnLoad 1.5s ease forwards;
+    }
+
+    /* Zoom out animation on page load */
+    @keyframes zoomOutOnLoad {
+      from {
+        transform: scale(1.15);
+      }
+      to {
+        transform: scale(1);
+      }
+    }
+
+    /* Breathing animation after zoom out */
+    .circle-wrapper.breathing {
+      animation: breathing-scale 6s ease-in-out infinite;
+    }
+    @keyframes breathing-scale {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.03);
+      }
+    }
+
+    /* Zoom in animation on click before redirect */
+    .circle-wrapper.zoom-in {
+      animation: zoomInOnClick 0.6s ease forwards;
+      cursor: progress; /* Show loading cursor */
+    }
+    @keyframes zoomInOnClick {
+      from {
+        transform: scale(1);
+      }
+      to {
+        transform: scale(1.2);
+        opacity: 0;
+      }
+    }
+
+    /* Text styles */
+    .circle-text {
+      font-weight: 700;
+      font-size: 2.4rem;
+      letter-spacing: 0.1em;
+      text-align: center;
+      color: #a8c6ff;
+      text-shadow:
+        0 0 4px #1473ff;
+      margin: 0;
+      user-select: none;
+    }
+
+    .circle-subtext {
+      font-weight: 400;
+      font-size: 1.25rem;
+      color: #c4d0ffcc;
+      text-shadow:
+        0 0 2px #0a52d4;
+      margin: 6px 0 24px 0;
+      user-select: none;
+      letter-spacing: 0.05em;
+    }
+
+    /* Enter Button */
+    .enter-button {
+      padding: 14px 36px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: white;
+      background: linear-gradient(135deg, #0047ab, #0085ff);
+      border: none;
+      border-radius: 12px;
+      box-shadow:
+        0 6px 16px rgba(0, 133, 255, 0.7);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      user-select: none;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      filter: drop-shadow(0 0 4px #0085ff);
+    }
+
+    .enter-button:hover {
+      background: linear-gradient(135deg, #0061ff, #66a6ff);
+      box-shadow:
+        0 8px 24px rgba(0, 161, 255, 0.9);
+      transform: translateY(-3px);
+    }
+
+    .enter-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="circle-wrapper" id="circleWrapper" role="main" aria-label="Landing circle with site title and enter button">
+    <h1 class="circle-text">STUDENT-HIVE</h1>
+    <p class="circle-subtext">Comprehensive Student Administration System</p>
+    <button class="enter-button" id="enterButton" aria-label="Enter the Student Hive Dashboard">Enter</button>
+  </div>
+
+  <script>
+    const wrapper = document.getElementById('circleWrapper');
+    const enterBtn = document.getElementById('enterButton');
+
+    // Start breathing animation after zoom out on load
+    wrapper.addEventListener('animationend', (e) => {
+      if (e.animationName === 'zoomOutOnLoad') {
+        wrapper.classList.add('breathing');
+      }
+    });
+
+    enterBtn.addEventListener('click', () => {
+      // Disable button to prevent multiple clicks
+      enterBtn.disabled = true;
+
+      // Remove breathing animation so zoom-in looks smooth
+      wrapper.classList.remove('breathing');
+
+      // Add zoom-in animation class
+      wrapper.classList.add('zoom-in');
+
+      // When zoom-in animation ends, redirect to /dashboard
+      wrapper.addEventListener('animationend', function handler(e) {
+        if (e.animationName === 'zoomInOnClick') {
+          window.location.href = '/dashboard';
+          // Remove event listener after firing once
+          wrapper.removeEventListener('animationend', handler);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Opening Animation</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #000; /* Black background */
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: white;
+    }
+
+    .opening-animation {
+      position: relative;
+      text-align: center;
+    }
+
+    .circle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 300px;
+      height: 300px;
+      background: rgba(0, 0, 50, 0.2);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 2px solid rgba(0, 123, 255, 0.4);
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out, width 1.5s ease-in-out, height 1.5s ease-in-out, top 1.5s ease-in-out, left 1.5s ease-in-out;
+    }
+
+    .circle-text {
+      color: white;
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-align: center;
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="opening-animation">
+    <div class="circle" id="circle">
+      <div class="circle-text">STUDENT-HIVE</div>
+      <div class="circle-text">Integrated Student Information System</div>
+    </div>
+  </div>
+
+  <script>
+    const circle = document.getElementById('circle');
+
+    // Step 1: Fade in
+    setTimeout(() => {
+      circle.style.opacity = '1';
+    }, 500);
+
+    // Step 2: Expand
+    setTimeout(() => {
+      const diagonal = Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) * 1.5;
+      circle.style.width = diagonal + 'px';
+      circle.style.height = diagonal + 'px';
+      circle.style.top = '50%';
+      circle.style.left = '50%';
+      circle.style.transform = 'translate(-50%, -50%)';
+    }, 1500);
+
+    // Step 3: Redirect
+    setTimeout(() => {
+      window.location.href = 'login.html';
+    }, 3000);
+  </script>
+</body>
+</html>

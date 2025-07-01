@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Marks Insights</title>
+
+  <!-- Bootstrap 5 CSS CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      background-color: #0b1220; /* very dark navy */
+      color: #cbd5e1; /* light slate */
+    }
+    .container {
+      max-width: 800px;
+      margin-top: 40px;
+      margin-bottom: 40px;
+      background: #101828; /* dark blue/black */
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 6px 15px rgba(14, 32, 71, 0.8); /* deep blue shadow */
+    }
+    h2 {
+      font-weight: 700;
+      margin-bottom: 30px;
+      color: #60a5fa; /* lighter blue */
+    }
+    h4.text-primary {
+      color: #2563eb !important; /* deeper blue */
+    }
+    .toggle-btn label {
+      margin-right: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      color: #cbd5e1;
+    }
+    .btn-toggle {
+      margin-top: 10px;
+      margin-bottom: 20px;
+    }
+    canvas {
+      width: 100% !important;
+      height: 300px !important;
+      background-color: transparent;
+    }
+    .no-data {
+      font-style: italic;
+      color: #94a3b8;
+      text-align: center;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2 class="text-center">Graphical Insights for {{ student.name }} ({{ student.roll_no }})</h2>
+
+    {% if marks %}
+      {% for sem, subjects in marks.items() %}
+        <div class="semester-section">
+          <h4 class="text-primary">Semester: {{ sem }}</h4>
+
+          <div class="toggle-btn btn-toggle">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="chartType-{{ loop.index }}" id="bar-{{ loop.index }}" value="bar" checked>
+              <label class="form-check-label" for="bar-{{ loop.index }}">Bar Chart</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="chartType-{{ loop.index }}" id="pie-{{ loop.index }}" value="pie">
+              <label class="form-check-label" for="pie-{{ loop.index }}">Pie Chart</label>
+            </div>
+          </div>
+
+          <div class="chart-container">
+            <canvas id="barChart-{{ loop.index }}"></canvas>
+            <canvas id="pieChart-{{ loop.index }}" style="display:none;"></canvas>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="no-data">No marks data available to visualize.</p>
+    {% endif %}
+  </div>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    {% for sem, subjects in marks.items() %}
+    (function() {
+      const labels{{ loop.index }} = {{ subjects.keys()|list|tojson }};
+      const data{{ loop.index }} = {{ subjects.values()|list|tojson }};
+
+      // Color palettes (vibrant, no blue shades for bar chart)
+      const barColors = [
+        'rgba(255, 99, 132, 0.8)',    // Red
+        'rgba(255, 159, 64, 0.8)',    // Orange
+        'rgba(255, 205, 86, 0.8)',    // Yellow
+        'rgba(75, 192, 192, 0.8)',    // Teal
+        'rgba(54, 162, 235, 0.5)',    // Light Blue (used sparingly)
+        'rgba(153, 102, 255, 0.8)',   // Purple
+        'rgba(201, 203, 207, 0.8)',   // Grey
+        'rgba(255, 99, 71, 0.8)',     // Tomato red
+        'rgba(255, 20, 147, 0.8)'     // Deep pink
+      ];
+
+      // Pie chart colors, deep blue and complementary vibrant colors
+      const pieColors = [
+        'rgba(37, 99, 235, 0.8)',     // Deep blue
+        'rgba(99, 102, 241, 0.8)',    // Indigo
+        'rgba(129, 140, 248, 0.8)',   // Light indigo
+        'rgba(147, 197, 253, 0.8)',   // Sky blue
+        'rgba(253, 224, 71, 0.8)',    // Bright yellow
+        'rgba(248, 113, 113, 0.8)',   // Soft red
+        'rgba(132, 204, 22, 0.8)',    // Lime green
+        'rgba(14, 165, 233, 0.8)',    // Blue cyan
+        'rgba(196, 181, 253, 0.8)'    // Lavender
+      ];
+
+      // Bar Chart
+      const barCtx{{ loop.index }} = document.getElementById('barChart-{{ loop.index }}').getContext('2d');
+      const barChart{{ loop.index }} = new Chart(barCtx{{ loop.index }}, {
+        type: 'bar',
+        data: {
+          labels: labels{{ loop.index }},
+          datasets: [{
+            label: 'Marks',
+            data: data{{ loop.index }},
+            backgroundColor: barColors.slice(0, labels{{ loop.index }}.length),
+            borderColor: barColors.slice(0, labels{{ loop.index }}.length).map(c => c.replace('0.8', '1')),
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 100,
+              ticks: {
+                color: '#cbd5e1'  // light slate for axis labels
+              },
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+              }
+            },
+            x: {
+              ticks: {
+                color: '#cbd5e1'
+              },
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            }
+          }
+        }
+      });
+
+      // Pie Chart
+      const pieCtx{{ loop.index }} = document.getElementById('pieChart-{{ loop.index }}').getContext('2d');
+      const pieChart{{ loop.index }} = new Chart(pieCtx{{ loop.index }}, {
+        type: 'pie',
+        data: {
+          labels: labels{{ loop.index }},
+          datasets: [{
+            data: data{{ loop.index }},
+            backgroundColor: pieColors.slice(0, labels{{ loop.index }}.length),
+            borderColor: '#0b1220', // same as background for neat edges
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: {
+                color: '#cbd5e1'
+              }
+            }
+          }
+        }
+      });
+
+      // Toggle logic
+      const radios = document.getElementsByName('chartType-{{ loop.index }}');
+      radios.forEach(radio => {
+        radio.addEventListener('change', function() {
+          if (this.value === 'bar') {
+            document.getElementById('barChart-{{ loop.index }}').style.display = 'block';
+            document.getElementById('pieChart-{{ loop.index }}').style.display = 'none';
+          } else {
+            document.getElementById('barChart-{{ loop.index }}').style.display = 'none';
+            document.getElementById('pieChart-{{ loop.index }}').style.display = 'block';
+          }
+        });
+      });
+    })();
+    {% endfor %}
+  });
+  </script>
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
